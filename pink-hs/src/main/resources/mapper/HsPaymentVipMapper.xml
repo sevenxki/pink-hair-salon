@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsPaymentVipMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsPaymentVip" id="HsPaymentVipMap">
+        <result property="paymentVipId" column="payment_vip_id" jdbcType="INTEGER"/>
+        <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+        <result property="useNumber" column="use_number" jdbcType="INTEGER"/>
+        <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+        <association property="hsPaymentOrder" javaType="edu.scau.misp.hs.entity.HsPaymentOrder">
+            <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+            <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+            <result property="time" column="time" jdbcType="TIMESTAMP"/>
+            <result property="useDiscount" column="use_discount" jdbcType="INTEGER"/>
+            <result property="useVip" column="use_vip" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="phonePayment" column="phone_payment" jdbcType="VARCHAR"/>
+            <result property="paymentMethod" column="payment_method" jdbcType="INTEGER"/>
+            <result property="totalPayment" column="total_payment" jdbcType="INTEGER"/>
+        </association>
+        <association property="hsVip" javaType="edu.scau.misp.hs.entity.HsVip">
+            <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+            <result property="vipName" column="vip_name" jdbcType="VARCHAR"/>
+            <result property="vipGender" column="vip_gender" jdbcType="INTEGER"/>
+            <result property="vipPhone" column="vip_phone" jdbcType="VARCHAR"/>
+            <result property="vipBirthday" column="vip_birthday" jdbcType="TIMESTAMP"/>
+            <result property="vipBalance" column="vip_balance" jdbcType="INTEGER"/>
+            <result property="vipHaircut" column="vip_haircut" jdbcType="INTEGER"/>
+            <result property="vipHaircare" column="vip_haircare" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsPaymentVipMap">
+        select
+          a.payment_vip_id, a.vip_id, a.use_number, a.payment_order_id,
+          b.vip_id, b.vip_name, b.vip_gender, b.vip_phone, b.vip_birthday, b.vip_balance, b.vip_haircut, b.vip_haircare,
+          c.payment_order_id, c.order_id, c.time, c.phone_payment,c.payment_method, c.use_discount, c.use_vip, c.status, c.total_payment
+        from hs_payment_vip as a left join hs_vip as b on a.vip_id = b.vip_id
+                                 left join hs_payment_order as c on a.payment_order_id = c.payment_order_id
+        where a.payment_vip_id = #{paymentVipId}
+    </select>
+
+    <!--查询单个-->
+    <select id="queryByPayment" resultMap="HsPaymentVipMap">
+        select
+            a.payment_vip_id, a.vip_id, a.use_number, a.payment_order_id,
+            b.vip_id, b.vip_name, b.vip_gender, b.vip_phone, b.vip_birthday, b.vip_balance, b.vip_haircut, b.vip_haircare,
+            c.payment_order_id, c.order_id, c.time, c.phone_payment,c.payment_method, c.use_discount, c.use_vip, c.status, c.total_payment
+        from hs_payment_vip as a left join hs_vip as b on a.vip_id = b.vip_id
+                                 left join hs_payment_order as c on a.payment_order_id = c.payment_order_id
+        where a.payment_order_id = #{paymentOrderId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsPaymentVipMap">
+        select
+        a.payment_vip_id, a.vip_id, a.use_number, a.payment_order_id,
+        b.vip_id, b.vip_name, b.vip_gender, b.vip_phone, b.vip_birthday, b.vip_balance, b.vip_haircut, b.vip_haircare,
+        c.payment_order_id, c.order_id, c.time, c.phone_payment,c.payment_method, c.use_discount, c.use_vip, c.status, c.total_payment
+        from hs_payment_vip as a left join hs_vip as b on a.vip_id = b.vip_id
+        left join hs_payment_order as c on a.payment_order_id = c.payment_order_id
+        <where>
+            <if test="paymentVipId != null">
+                and a.payment_vip_id = #{paymentVipId}
+            </if>
+            <if test="vipId != null">
+                and a.vip_id = #{vipId}
+            </if>
+            <if test="useNumber != null">
+                and a.use_number = #{useNumber}
+            </if>
+            <if test="paymentOrderId != null">
+                and a.payment_order_id = #{paymentOrderId}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_payment_vip
+        <where>
+            <if test="paymentVipId != null">
+                and payment_vip_id = #{paymentVipId}
+            </if>
+            <if test="vipId != null">
+                and vip_id = #{vipId}
+            </if>
+            <if test="useNumber != null">
+                and use_number = #{useNumber}
+            </if>
+            <if test="paymentOrderId != null">
+                and payment_order_id = #{paymentOrderId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="paymentVipId" useGeneratedKeys="true">
+        insert into hs_payment_vip(vip_id, use_number, payment_order_id)
+        values (#{vipId}, #{useNumber}, #{paymentOrderId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_payment_vip
+        <set>
+            <if test="vipId != null">
+                vip_id = #{vipId},
+            </if>
+            <if test="useNumber != null">
+                use_number = #{useNumber},
+            </if>
+            <if test="paymentOrderId != null">
+                payment_order_id = #{paymentOrderId},
+            </if>
+        </set>
+        where payment_vip_id = #{paymentVipId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_payment_vip where payment_vip_id = #{paymentVipId}
+    </delete>
+
+<!--    &lt;!&ndash;通过付款订单号删除&ndash;&gt;-->
+<!--    <delete id="deleteByPaymentOrderId">-->
+<!--        delete from hs_payment_vip where payment_order_id = #{paymentOrderId}-->
+<!--    </delete>-->
+
+</mapper>
+

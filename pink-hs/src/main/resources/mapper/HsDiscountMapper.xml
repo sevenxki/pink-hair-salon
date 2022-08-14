@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsDiscountMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsDiscount" id="HsDiscountMap">
+        <result property="discountId" column="discount_id" jdbcType="INTEGER"/>
+        <result property="discountName" column="discount_name" jdbcType="VARCHAR"/>
+        <result property="discountNo" column="discount_no" jdbcType="INTEGER"/>
+        <result property="discountMoney" column="discount_money" jdbcType="INTEGER"/>
+        <result property="discountTimes" column="discount_times" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsDiscountMap">
+        select
+          discount_id, discount_name, discount_no, discount_money, discount_times
+        from hs_discount
+        where discount_id = #{discountId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsDiscountMap">
+        select
+          discount_id, discount_name, discount_no, discount_money, discount_times
+        from hs_discount
+        <where>
+            <if test="discountId != null">
+                and discount_id = #{discountId}
+            </if>
+            <if test="discountName != null and discountName != ''">
+                and discount_name = #{discountName}
+            </if>
+            <if test="discountNo != null">
+                and discount_no = #{discountNo}
+            </if>
+            <if test="discountMoney != null">
+                and discount_money = #{discountMoney}
+            </if>
+            <if test="discountTimes != null">
+                and discount_times = #{discountTimes}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_discount
+        <where>
+            <if test="discountId != null">
+                and discount_id = #{discountId}
+            </if>
+            <if test="discountName != null and discountName != ''">
+                and discount_name = #{discountName}
+            </if>
+            <if test="discountNo != null">
+                and discount_no = #{discountNo}
+            </if>
+            <if test="discountMoney != null">
+                and discount_money = #{discountMoney}
+            </if>
+            <if test="discountTimes != null">
+                and discount_times = #{discountTimes}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="discountId" useGeneratedKeys="true">
+        insert into hs_discount(discount_name, discount_no, discount_money, discount_times)
+        values (#{discountName}, #{discountNo}, #{discountMoney}, #{discountTimes})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="discountId" useGeneratedKeys="true">
+        insert into hs_discount(discount_name, discount_no, discount_money, discount_times)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.discountName}, #{entity.discountNo}, #{entity.discountMoney}, #{entity.discountTimes})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="discountId" useGeneratedKeys="true">
+        insert into hs_discount(discount_name, discount_no, discount_money, discount_times)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.discountName}, #{entity.discountNo}, #{entity.discountMoney}, #{entity.discountTimes})
+        </foreach>
+        on duplicate key update
+        discount_name = values(discount_name),
+        discount_no = values(discount_no),
+        discount_money = values(discount_money),
+        discount_times = values(discount_times)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_discount
+        <set>
+            <if test="discountName != null and discountName != ''">
+                discount_name = #{discountName},
+            </if>
+            <if test="discountNo != null">
+                discount_no = #{discountNo},
+            </if>
+            <if test="discountMoney != null">
+                discount_money = #{discountMoney},
+            </if>
+            <if test="discountTimes != null">
+                discount_times = #{discountTimes},
+            </if>
+        </set>
+        where discount_id = #{discountId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_discount where discount_id = #{discountId}
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsProjectMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsProject" id="HsProjectMap">
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="projectLevel" column="project_level" jdbcType="VARCHAR"/>
+        <result property="projectNo" column="project_no" jdbcType="INTEGER"/>
+        <result property="projectPrice" column="project_price" jdbcType="NUMERIC"/>
+        <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
+        <association property="hsKind" javaType="edu.scau.misp.hs.mapper.HsKindMapper"
+                     column="kind_id"
+                     select="edu.scau.misp.hs.mapper.HsKindMapper.queryById">
+        </association>
+        <association property="hsStaff" javaType="edu.scau.misp.hs.entity.HsStaff" >
+            <result property="staffId" column="staff_id" jdbcType="INTEGER"/>
+            <result property="staffNumber" column="staff_number" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+            <result property="level" column="level" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="phoneNumber" column="phone_number" jdbcType="INTEGER"/>
+            <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+            <result property="creationDay" column="creation_day" jdbcType="TIMESTAMP"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--查询对应等级的员工name-->
+    <select id="queryStaffByLevel" resultMap="HsProjectMap">
+        select
+            hs.staff_name
+        from hs_project as hp left join hs_staff as hs on hp.project_level = hs.level
+        where project_name = #{projectName}
+    </select>
+    <!--查询对应等级的员工all-->
+    <select id="queryStaffByLevelAll" resultMap="HsProjectMap">
+        select
+            hs.staff_id, hs.staff_number, hs.username, hs.staff_name, hs.level, hs.gender, hs.phone_number, hs.birthday, hs.creation_day, hs.role_id
+        from hs_project as hp left join hs_staff as hs on hp.project_level = hs.level
+        where project_name = #{projectName}
+    </select>
+    <!--查询价钱-->
+    <select id="queryProjectIdByName" resultMap="HsProjectMap">
+        select
+            project_id
+        from hs_project
+        where project_name =  #{projectName}
+    </select>
+
+    <!--查询小于自定义价钱-->
+    <select id="queryPriceByProjectId" resultMap="HsProjectMap">
+        select
+            project_id, project_name, project_level, project_no, project_price, kind_id
+        from hs_project
+        where project_price &lt;  #{hsPrice}
+    </select>
+
+    <!--查询用项目类型名字查询项目名字-->
+    <select id="queryAllProjectNameByKind" resultMap="HsProjectMap">
+        select
+            project_name
+        from hs_project as hp left join hs_kind as hk on hp.kind_id = hk.kind_id
+        where kind_name = #{kindName}
+    </select>
+    <!--通过项目类别名字查询项目的ID和name-->
+    <select id="queryAllProjectAllByKind" resultMap="HsProjectMap">
+        select
+            hp.project_id, hp.project_name, hp.project_level, hp.project_no, hp.project_price, hp.kind_id,
+            hk.kind_id
+        from hs_project as hp left join hs_kind as hk on hp.kind_id = hk.kind_id
+        where kind_name = #{kindName}
+    </select>
+    <!--查询价格-->
+    <select id="queryPriceByProjectName" resultMap="HsProjectMap">
+        select
+            project_id, project_name, project_level, project_no, project_price, kind_id
+        from hs_project
+        where project_name = #{projectName}
+    </select>
+
+    <!--查询护理项目-->
+    <select id="queryAllHairCare" resultMap="HsProjectMap">
+        select
+            project_name
+        from hs_project
+        where project_level = 0
+    </select>
+    <!--查询护理项目all-->
+    <select id="queryAllHairCareAll" resultMap="HsProjectMap">
+        select
+            project_id, project_name, project_level, project_no, project_price, kind_id
+        from hs_project
+        where project_level = 0
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsProjectMap">
+        select
+         hp.project_id, hp.project_name, hp.project_level, hp.project_no, hp.project_price, hp.kind_id,
+         hk.kind_name,hk.kind_no
+        from hs_project as hp left join hs_kind hk on hp.kind_id = hk.kind_id
+        <where>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and project_name = #{projectName}
+            </if>
+            <if test="projectLevel != null and projectLevel != ''">
+                and project_level = #{projectLevel}
+            </if>
+            <if test="projectNo != null">
+                and project_no = #{projectNo}
+            </if>
+            <if test="projectPrice != null">
+                and project_price &lt;  #{projectPrice}
+            </if>
+            <if test="kindId != null">
+                and kind_id = #{kindId}
+            </if>
+        </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsProjectMap">
+        select
+            project_id, project_name, project_level, project_no, project_price, kind_id
+        from hs_project
+        where project_id = #{projectId}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_project
+        <where>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and project_name = #{projectName}
+            </if>
+            <if test="projectLevel != null and projectLevel != ''">
+                and project_level = #{projectLevel}
+            </if>
+            <if test="projectNo != null">
+                and project_no = #{projectNo}
+            </if>
+            <if test="projectPrice != null">
+                and project_price = #{projectPrice}
+            </if>
+            <if test="kindId != null">
+                and kind_id = #{kindId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="projectId" useGeneratedKeys="true">
+        insert into hs_project(project_name, project_level, project_no, project_price, kind_id)
+        values (#{projectName}, #{projectLevel}, #{projectNo}, #{projectPrice}, #{kindId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="projectId" useGeneratedKeys="true">
+        insert into hs_project(project_name, project_level, project_no, project_price, kind_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.projectName}, #{entity.projectLevel}, #{entity.projectNo}, #{entity.projectPrice}, #{entity.kindId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="projectId" useGeneratedKeys="true">
+        insert into hs_project(project_name, project_level, project_no, project_price, kind_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.projectName}, #{entity.projectLevel}, #{entity.projectNo}, #{entity.projectPrice}, #{entity.kindId})
+        </foreach>
+        on duplicate key update
+        project_name = values(project_name),
+        project_level = values(project_level),
+        project_no = values(project_no),
+        project_price = values(project_price),
+        kind_id = values(kind_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_project
+        <set>
+            <if test="projectName != null and projectName != ''">
+                project_name = #{projectName},
+            </if>
+            <if test="projectLevel != null and projectLevel != ''">
+                project_level = #{projectLevel},
+            </if>
+            <if test="projectNo != null">
+                project_no = #{projectNo},
+            </if>
+            <if test="projectPrice != null">
+                project_price = #{projectPrice},
+            </if>
+            <if test="kindId != null">
+                kind_id = #{kindId},
+            </if>
+        </set>
+        where project_id = #{projectId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_project where project_id = #{projectId}
+    </delete>
+
+
+
+</mapper>
+

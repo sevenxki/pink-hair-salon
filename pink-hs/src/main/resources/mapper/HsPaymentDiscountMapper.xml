@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsPaymentDiscountMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsPaymentDiscount" id="HsPaymentDiscountMap">
+        <result property="paymentDiscountId" column="payment_discount_id" jdbcType="INTEGER"/>
+        <result property="discountId" column="discount_id" jdbcType="INTEGER"/>
+        <result property="count" column="count" jdbcType="INTEGER"/>
+        <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+        <association property="hsDiscount" javaType="edu.scau.misp.hs.entity.HsDiscount">
+            <result property="discountId" column="discount_id" jdbcType="INTEGER"/>
+            <result property="discountName" column="discount_name" jdbcType="VARCHAR"/>
+            <result property="discountNo" column="discount_no" jdbcType="INTEGER"/>
+            <result property="discountMoney" column="discount_money" jdbcType="INTEGER"/>
+            <result property="discountTimes" column="discount_times" jdbcType="INTEGER"/>
+        </association>
+        <association property="hsPaymentOrder" javaType="edu.scau.misp.hs.entity.HsPaymentOrder">
+            <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+            <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+            <result property="time" column="time" jdbcType="TIMESTAMP"/>
+            <result property="useDiscount" column="use_discount" jdbcType="INTEGER"/>
+            <result property="useVip" column="use_vip" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="phonePayment" column="phone_payment" jdbcType="VARCHAR"/>
+            <result property="paymentMethod" column="payment_method" jdbcType="INTEGER"/>
+            <result property="totalPayment" column="total_payment" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsPaymentDiscountMap">
+        select
+          a.payment_discount_id, a.discount_id, a.count, a.payment_order_id,
+          b.discount_id, b.discount_name, b.discount_no, b.discount_money, b.discount_times,
+          c.payment_order_id, c.order_id, c.time, c.phone_payment,c.payment_method, c.use_discount, c.use_vip, c.status, c.total_payment
+        from hs_payment_discount as a left join hs_discount as b on a.discount_id = b.discount_id
+                                      left join hs_payment_order as c on a.payment_order_id = c.payment_order_id
+        where a.payment_discount_id = #{paymentDiscountId}
+    </select>
+
+    <!--通过付款订单号查询单个-->
+    <select id="queryByPayment" resultMap="HsPaymentDiscountMap">
+        select
+            a.payment_discount_id, a.discount_id, a.count, a.payment_order_id,
+            b.discount_id, b.discount_name, b.discount_no, b.discount_money, b.discount_times,
+            c.payment_order_id, c.order_id, c.time, c.phone_payment,c.payment_method, c.use_discount, c.use_vip, c.status, c.total_payment
+        from hs_payment_discount as a left join hs_discount as b on a.discount_id = b.discount_id
+                                      left join hs_payment_order as c on a.payment_order_id = c.payment_order_id
+        where a.payment_order_id = #{paymentOrderId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsPaymentDiscountMap">
+        select
+        a.payment_discount_id, a.discount_id, a.count, a.payment_order_id,
+        b.discount_id, b.discount_name, b.discount_no, b.discount_money, b.discount_times,
+        c.payment_order_id, c.order_id, c.time, c.phone_payment,c.payment_method, c.use_discount, c.use_vip, c.status, c.total_payment
+        from hs_payment_discount as a left join hs_discount as b on a.discount_id = b.discount_id
+        left join hs_payment_order as c on a.payment_order_id = c.payment_order_id
+        <where>
+            <if test="paymentDiscountId != null">
+                and a.payment_discount_id = #{paymentDiscountId}
+            </if>
+            <if test="discountId != null">
+                and a.discount_id = #{discountId}
+            </if>
+            <if test="count != null">
+                and a.count = #{count}
+            </if>
+            <if test="paymentOrderId != null">
+                and a.payment_order_id = #{paymentOrderId}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_payment_discount
+        <where>
+            <if test="paymentDiscountId != null">
+                and payment_discount_id = #{paymentDiscountId}
+            </if>
+            <if test="discountId != null">
+                and discount_id = #{discountId}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="paymentOrderId != null">
+                and payment_order_id = #{paymentOrderId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="paymentDiscountId" useGeneratedKeys="true">
+        insert into hs_payment_discount(discount_id, count, payment_order_id)
+        values (#{discountId}, #{count}, #{paymentOrderId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_payment_discount
+        <set>
+            <if test="discountId != null">
+                discount_id = #{discountId},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="paymentOrderId != null">
+                payment_order_id = #{paymentOrderId},
+            </if>
+        </set>
+        where payment_discount_id = #{paymentDiscountId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_payment_discount where payment_discount_id = #{paymentDiscountId}
+    </delete>
+
+<!--    &lt;!&ndash;通过付款订单号删除&ndash;&gt;-->
+<!--    <delete id="deleteByPaymentOrderId">-->
+<!--        delete from hs_payment_discount where payment_order_id = #{paymentOrderId}-->
+<!--    </delete>-->
+
+</mapper>
+

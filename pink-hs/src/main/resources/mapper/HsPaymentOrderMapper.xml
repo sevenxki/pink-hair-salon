@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsPaymentOrderMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsPaymentOrder" id="HsPaymentOrderMap">
+        <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+        <result property="time" column="time" jdbcType="TIMESTAMP"/>
+        <result property="useDiscount" column="use_discount" jdbcType="INTEGER"/>
+        <result property="useVip" column="use_vip" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="phonePayment" column="phone_payment" jdbcType="VARCHAR"/>
+        <result property="paymentMethod" column="payment_method" jdbcType="INTEGER"/>
+        <result property="totalPayment" column="total_payment" jdbcType="INTEGER"/>
+        <association property="hsOrder" javaType="edu.scau.misp.hs.entity.HsOrder">
+            <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+            <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+            <result property="staffHairstylistId" column="staff_hairstylist_id" jdbcType="INTEGER"/>
+            <result property="staffTechnicianId" column="staff_technician_id" jdbcType="INTEGER"/>
+            <result property="haircare" column="haircare" jdbcType="INTEGER"/>
+            <result property="total" column="total" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="orderCreatetime" column="order_createtime" jdbcType="TIMESTAMP"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsPaymentOrderMap">
+        select
+          a.payment_order_id, a.order_id, a.time,a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment,
+          b.order_id, b.project_id, b.staff_hairstylist_id, b.staff_technician_id, b.haircare, b.total, b.status, b.user_id, b.order_createtime
+        from hs_payment_order as a left join hs_order as b on a.order_id = b.order_id
+        where a.payment_order_id = #{paymentOrderId}
+    </select>
+
+    <!--查询已经结账的-->
+    <select id="queryOver" resultMap="HsPaymentOrderMap">
+        select
+            payment_order_id, order_id, time ,phone_payment, payment_method, use_discount, use_vip,status, total_payment
+        from hs_payment_order
+        where status = 1
+    </select>
+
+    <!--查询根据手机号-->
+    <select id="queryByPhone" resultMap="HsPaymentOrderMap">
+        select
+            a.payment_order_id, a.order_id, a.time,a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment,
+            b.order_id, b.project_id, b.staff_hairstylist_id, b.staff_technician_id, b.haircare, b.total, b.status, b.user_id, b.order_createtime
+        from hs_payment_order as a left join hs_order as b on a.order_id = b.order_id
+        where a.phone_payment = #{phonePayment}
+    </select>
+
+    <!--查询根据订单号-->
+    <select id="queryByOrder" resultMap="HsPaymentOrderMap">
+        select
+            a.payment_order_id, a.order_id, a.time,a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment,
+            b.order_id, b.project_id, b.staff_hairstylist_id, b.staff_technician_id, b.haircare, b.total, b.status, b.user_id, b.order_createtime
+        from hs_payment_order as a left join hs_order as b on a.order_id = b.order_id
+        where a.order_id = #{orderId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryDay" resultMap="HsPaymentOrderMap">
+        select
+            payment_order_id, order_id, time ,phone_payment, payment_method, use_discount, use_vip,status, total_payment
+        from hs_payment_order
+        where time BETWEEN #{arg0} AND #{arg1}  and  use_vip != 1 and status = 1
+
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="all" resultMap="HsPaymentOrderMap">
+        select
+            a.payment_order_id, a.order_id, a.time, a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment,
+            b.order_id, b.project_id, b.staff_hairstylist_id, b.staff_technician_id, b.haircare, b.total, b.status, b.user_id, b.order_createtime
+        from hs_payment_order as a left join hs_order as b on a.order_id = b.order_id
+        where use_vip != 1 and a.status = 1
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsPaymentOrderMap">
+        select
+        a.payment_order_id, a.order_id, a.time, a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment,
+        b.order_id, b.project_id, b.staff_hairstylist_id, b.staff_technician_id, b.haircare, b.total, b.status, b.user_id, b.order_createtime
+        from hs_payment_order as a left join hs_order as b on a.order_id = b.order_id
+        <where>
+            <if test="paymentOrderId != null">
+                and a.payment_order_id = #{paymentOrderId}
+            </if>
+            <if test="orderId != null">
+                and a.order_id = #{orderId}
+            </if>
+            <if test="time != null">
+                and TO_DAYS(a.time) = TO_DAYS(#{time})
+            </if>
+            <if test="phonePayment != null">
+                and a.phone_payment = #{phonePayment}
+            </if>
+            <if test="paymentMethod != null">
+                and a.payment_method= #{paymentMethod}
+            </if>
+            <if test="useDiscount != null">
+                and a.use_discount = #{useDiscount}
+            </if>
+            <if test="useVip != null">
+                and a.use_vip = #{useVip}
+            </if>
+            <if test="status != null">
+                and a.status = #{status}
+            </if>
+            <if test="totalPayment != null">
+                and a.total_payment = #{totalPayment}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_payment_order
+        <where>
+            <if test="paymentOrderId != null">
+                and payment_order_id = #{paymentOrderId}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId}
+            </if>
+            <if test="time != null">
+                and time = #{time}
+            </if>
+            <if test="phonePayment != null">
+                and phone_payment = #{phonePayment}
+            </if>
+            <if test="paymentMethod != null">
+                and payment_method= #{paymentMethod}
+            </if>
+            <if test="useDiscount != null">
+                and use_discount = #{useDiscount}
+            </if>
+            <if test="useVip != null">
+                and use_vip = #{useVip}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="totalPayment != null">
+                and total_payment = #{totalPayment}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="paymentOrderId" useGeneratedKeys="true">
+        insert into hs_payment_order(order_id, time, phone_payment, payment_method, use_discount, use_vip, status, total_payment)
+        values (#{orderId}, #{time}, #{phonePayment}, #{paymentMethod}, #{useDiscount}, #{useVip}, #{status}, #{totalPayment})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_payment_order
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="phonePayment != null">
+                phone_payment = #{phonePayment},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method= #{paymentMethod},
+            </if>
+            <if test="useDiscount != null">
+                use_discount = #{useDiscount},
+            </if>
+            <if test="useVip != null">
+                use_vip = #{useVip},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="totalPayment != null">
+                total_payment = #{totalPayment},
+            </if>
+        </set>
+        where payment_order_id = #{paymentOrderId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_payment_order where payment_order_id = #{paymentOrderId}
+    </delete>
+
+</mapper>
+

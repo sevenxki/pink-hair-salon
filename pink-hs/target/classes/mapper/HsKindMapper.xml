@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsKindMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsKind" id="HsKindMap">
+        <!--@Table hs_kind-->
+        <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
+        <result property="kindNo" column="kind_no" jdbcType="VARCHAR"/>
+        <result property="kindName" column="kind_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询价格（项目名称）-->
+    <select id="queryAllKind" resultMap="HsKindMap">
+        select
+            kind_name
+        from hs_kind
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsKindMap">
+        select
+          kind_id, kind_no, kind_name
+        from hs_kind
+        where kind_id = #{kindId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsKindMap">
+        select
+          kind_id, kind_no, kind_name
+        from hs_kind
+        <where>
+            <if test="kindId != null">
+                and kind_id = #{kindId}
+            </if>
+            <if test="kindNo != null and kindNo != ''">
+                and kind_no = #{kindNo}
+            </if>
+            <if test="kindName != null and kindName != ''">
+                and kind_name = #{kindName}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_kind
+        <where>
+            <if test="kindId != null">
+                and kind_id = #{kindId}
+            </if>
+            <if test="kindNo != null and kindNo != ''">
+                and kind_no = #{kindNo}
+            </if>
+            <if test="kindName != null and kindName != ''">
+                and kind_name = #{kindName}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="kindId" useGeneratedKeys="true">
+        insert into hs_kind(kind_no, kind_name)
+        values (#{kindNo}, #{kindName})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_kind
+        <set>
+            <if test="kindNo != null and kindNo != ''">
+                kind_no = #{kindNo},
+            </if>
+            <if test="kindName != null and kindName != ''">
+                kind_name = #{kindName},
+            </if>
+        </set>
+        where kind_id = #{kindId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_kind where kind_id = #{kindId}
+    </delete>
+
+</mapper>

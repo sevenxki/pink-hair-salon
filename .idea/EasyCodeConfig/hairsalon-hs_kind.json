@@ -1,0 +1,35 @@
+{
+  "name" : "HsKind",
+  "originTableName" : "hs_kind",
+  "comment" : null,
+  "fullColumn" : [ {
+    "name" : "kindId",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "ktShortType" : "Int",
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "kindNo",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "ktShortType" : "String",
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "kindName",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "ktShortType" : "String",
+    "custom" : false,
+    "ext" : { }
+  } ],
+  "pkColumn" : null,
+  "otherColumn" : null,
+  "savePackageName" : "edu.scau.misp.web",
+  "savePath" : "./pink-web/src/main/java/edu/scau/misp/web",
+  "saveModelName" : "pink-web"
+}

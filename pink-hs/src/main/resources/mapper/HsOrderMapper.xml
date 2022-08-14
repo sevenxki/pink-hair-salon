@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsOrderMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsOrder" id="HsOrderMap">
+        <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="staffHairstylistId" column="staff_hairstylist_id" jdbcType="INTEGER"/>
+        <result property="staffTechnicianId" column="staff_technician_id" jdbcType="INTEGER"/>
+        <result property="haircare" column="haircare" jdbcType="INTEGER"/>
+        <result property="total" column="total" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="orderCreatetime" column="order_createtime" jdbcType="TIMESTAMP"/>
+        <association property="hsProject" javaType="edu.scau.misp.hs.entity.HsProject">
+            <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+            <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+            <result property="projectLevel" column="project_level" jdbcType="VARCHAR"/>
+            <result property="projectNo" column="project_no" jdbcType="INTEGER"/>
+            <result property="projectPrice" column="project_price" jdbcType="NUMERIC"/>
+            <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
+        </association>
+        <association property="hsStaff1" javaType="edu.scau.misp.hs.entity.HsStaff">
+            <result property="staffId" column="staff_id" jdbcType="INTEGER"/>
+            <result property="staffNumber" column="staff_number" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+            <result property="level" column="level" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="phoneNumber" column="phone_number" jdbcType="INTEGER"/>
+            <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+            <result property="creationDay" column="creation_day" jdbcType="TIMESTAMP"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        </association>
+<!--        <association property="hsUser" javaType="edu.scau.misp.hs.entity.HsUser">-->
+<!--            <result property="userId" column="user_id" jdbcType="INTEGER"/>-->
+<!--            <result property="username" column="username" jdbcType="VARCHAR"/>-->
+<!--            <result property="password" column="password" jdbcType="VARCHAR"/>-->
+<!--        </association>-->
+    </resultMap>
+
+<!--    查询未支付的订单-->
+    <select id="queryNoPayment" resultMap="HsOrderMap">
+        select
+            a.order_id, a.project_id, a.staff_hairstylist_id, a.staff_technician_id, a.haircare, a.total, a.status, a.user_id, a.order_createtime,
+            b.project_id, b.project_name, b.project_level, b.project_no, b.project_price, b.kind_id,
+            c.staff_id , c.staff_name, c.role_id,c.username
+           from hs_order as a left join hs_project as b on a.project_id = b.project_id
+                           left join hs_staff as c on a.staff_technician_id = c.staff_id
+        where a.status = 0
+    </select>
+
+    <!--    查询已经支付的订单-->
+    <select id="queryPayment" resultMap="HsOrderMap">
+        select
+            a.order_id, a.project_id, a.staff_hairstylist_id, a.staff_technician_id, a.haircare, a.total, a.status, a.user_id, a.order_createtime,
+            b.project_id, b.project_name, b.project_level, b.project_no, b.project_price, b.kind_id,
+            c.staff_id , c.staff_name, c.role_id,c.username
+        from hs_order as a left join hs_project as b on a.project_id = b.project_id
+                           left join hs_staff as c on a.staff_technician_id = c.staff_id
+        where order_id = #{orderId} and a.status = 1
+    </select>
+
+    <!--根据订单号查询订单*-->
+    <select id="queryById" resultMap="HsOrderMap">
+        select
+            a.order_id, a.project_id, a.staff_hairstylist_id, a.staff_technician_id, a.haircare, a.total, a.status, a.user_id, a.order_createtime,
+            b.project_id, b.project_name, b.project_level, b.project_no, b.project_price, b.kind_id,
+            c.staff_id , c.staff_name, c.role_id,c.username
+--             d.user_id, d.username, d.password
+        from hs_order as a left join hs_project as b on a.project_id = b.project_id
+                           left join hs_staff as c on a.staff_technician_id = c.staff_id
+--                            left join hs_user as d on a.user_id = d.user_id
+        where order_id = #{orderId}
+    </select>
+
+<!--    根据项目名称查询相关订单*-->
+    <select id="queryByProjectName" resultMap="HsOrderMap">
+        select
+            a.order_id, a.project_id, a.staff_hairstylist_id, a.staff_technician_id, a.haircare, a.total, a.status, a.user_id, a.order_createtime,
+            b.project_id, b.project_name, b.project_level, b.project_no, b.project_price, b.kind_id,
+            c.staff_id , c.staff_name, c.role_id,c.username
+--             d.user_id, d.username, d.password
+        from hs_order as a left join hs_project as b on a.project_id = b.project_id
+                           left join hs_staff as c on a.staff_technician_id = c.staff_id
+--                            left join hs_user as d on a.user_id = d.user_id
+        where project_name = #{projectName}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsOrderMap">
+        select
+        a.order_id, a.project_id, a.staff_hairstylist_id, a.staff_technician_id, a.haircare, a.total, a.status, a.user_id, a.order_createtime,
+        b.project_id, b.project_name, b.project_level, b.project_no, b.project_price, b.kind_id,
+        c.staff_id , c.staff_name, c.role_id,c.username
+--         d.user_id, d.username, d.password
+        from hs_order as a left join hs_project as b on a.project_id = b.project_id
+        left join hs_staff as c on a.staff_technician_id = c.staff_id
+--         left join hs_user as d on a.user_id = d.user_id
+        <where>
+            <if test="orderId != null">
+                and a.order_id = #{orderId}
+            </if>
+            <if test="projectId != null">
+                and a.project_id = #{projectId}
+            </if>
+            <if test="staffHairstylistId != null">
+                and a.staff_hairstylist_id = #{staffHairstylistId}
+            </if>
+            <if test="staffTechnicianId != null">
+                and a.staff_technician_id = #{staffTechnicianId}
+            </if>
+            <if test="haircare != null">
+                and a.haircare = #{haircare}
+            </if>
+            <if test="total != null">
+                and a.total = #{total}
+            </if>
+            <if test="status != null">
+                and a.status = #{status}
+            </if>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="orderCreatetime != null">
+                and a.order_createtime = #{orderCreatetime}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_order
+        <where>
+            <if test="orderId != null">
+                and order_id = #{orderId}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="staffHairstylistId != null">
+                and staff_hairstylist_id = #{staffHairstylistId}
+            </if>
+            <if test="staffTechnicianId != null">
+                and staff_technician_id = #{staffTechnicianId}
+            </if>
+            <if test="haircare != null">
+                and haircare = #{haircare}
+            </if>
+            <if test="total != null">
+                and total = #{total}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="orderCreatetime != null">
+                and order_createtime = #{orderCreatetime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="orderId" useGeneratedKeys="true">
+        insert into hs_order(project_id, staff_hairstylist_id, staff_technician_id, haircare, total, status, user_id, order_createtime)
+        values (#{projectId}, #{staffHairstylistId}, #{staffTechnicianId}, #{haircare}, #{total}, #{status}, #{userId}, #{orderCreatetime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="orderId" useGeneratedKeys="true">
+        insert into hs_order(project_id, staff_hairstylist_id, staff_technician_id, haircare, total, status, user_id, order_createtime)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.projectId}, #{entity.staffHairstylistId}, #{entity.staffTechnicianId}, #{entity.haircare}, #{entity.total}, #{entity.status}, #{entity.userId}, #{entity.orderCreatetime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="orderId" useGeneratedKeys="true">
+        insert into hs_order(project_id, staff_hairstylist_id, staff_technician_id, haircare, total, status, user_id, order_createtime)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.projectId}, #{entity.staffHairstylistId}, #{entity.staffTechnicianId}, #{entity.haircare}, #{entity.total}, #{entity.status}, #{entity.userId}, #{entity.orderCreatetime})
+        </foreach>
+        on duplicate key update
+        project_id = values(project_id),
+        staff_hairstylist_id = values(staff_hairstylist_id),
+        staff_technician_id = values(staff_technician_id),
+        haircare = values(haircare),
+        total = values(total),
+        status = values(status),
+        user_id = values(user_id),
+        order_createtime = values(order_createtime)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_order
+        <set>
+            <if test="projectId != null">
+                project_id = #{projectId},
+            </if>
+            <if test="staffHairstylistId != null">
+                staff_hairstylist_id = #{staffHairstylistId},
+            </if>
+            <if test="staffTechnicianId != null">
+                staff_technician_id = #{staffTechnicianId},
+            </if>
+            <if test="haircare != null">
+                haircare = #{haircare},
+            </if>
+            <if test="total != null">
+                total = #{total},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="orderCreatetime != null">
+                order_createtime = #{orderCreatetime},
+            </if>
+        </set>
+        where order_id = #{orderId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_order where order_id = #{orderId}
+    </delete>
+
+</mapper>
+

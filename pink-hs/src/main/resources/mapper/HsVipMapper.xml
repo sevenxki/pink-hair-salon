@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsVipMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsVip" id="HsVipMap">
+        <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+        <result property="vipName" column="vip_name" jdbcType="VARCHAR"/>
+        <result property="vipGender" column="vip_gender" jdbcType="INTEGER"/>
+        <result property="vipPhone" column="vip_phone" jdbcType="VARCHAR"/>
+        <result property="vipBirthday" column="vip_birthday" jdbcType="TIMESTAMP"/>
+        <result property="vipBalance" column="vip_balance" jdbcType="INTEGER"/>
+        <result property="vipHaircut" column="vip_haircut" jdbcType="INTEGER"/>
+        <result property="vipHaircare" column="vip_haircare" jdbcType="INTEGER"/>
+        <result property="accumulationId" column="accumulation_id" jdbcType="INTEGER"/>
+        <result property="accumulationTotal" column="accumulation_total" jdbcType="INTEGER"/>
+        <association property="hsAccumulation" javaType="edu.scau.misp.hs.entity.HsAccumulation">
+        <result property="accumulationId" column="accumulation_id" jdbcType="INTEGER"/>
+        <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+        <result property="accumulationTotal" column="accumulation_total" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--通过电话删除-->
+    <delete id="deleteVip">
+        delete from hs_vip where vip_phone = #{vipPhone}
+    </delete>
+
+    <!--用电话找all-->
+    <select id="queryAllByPhone" resultMap="HsVipMap">
+        select
+            hv.vip_id, vip_name, vip_gender, vip_phone, vip_birthday, vip_balance, vip_haircut, vip_haircare,ha.accumulation_id, ha.vip_id, ha.accumulation_total
+        from hs_vip hv left join hs_accumulation ha on hv.vip_id = ha.vip_id
+        where vip_phone = #{vipPhone}
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsVipMap">
+        select
+            vip_id, vip_name, vip_gender, vip_phone, vip_birthday, vip_balance, vip_haircut, vip_haircare
+        from hs_vip
+        where vip_id = #{vipId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsVipMap">
+        select
+        hv.vip_id, vip_name, vip_gender, vip_phone, vip_birthday, vip_balance, vip_haircut, vip_haircare,ha.accumulation_id, ha.vip_id, ha.accumulation_total
+        from hs_vip hv left join hs_accumulation ha on hv.vip_id = ha.vip_id
+        <where>
+            <if test="vipId != null">
+                and vip_id = #{vipId}
+            </if>
+            <if test="vipName != null and vipName != ''">
+                and vip_name = #{vipName}
+            </if>
+            <if test="vipGender != null">
+                and vip_gender = #{vipGender}
+            </if>
+            <if test="vipPhone != null">
+                and vip_phone = #{vipPhone}
+            </if>
+            <if test="vipBirthday != null">
+                and vip_birthday = #{vipBirthday}
+            </if>
+            <if test="vipBalance != null">
+                and vip_balance = #{vipBalance}
+            </if>
+            <if test="vipHaircut != null">
+                and vip_haircut = #{vipHaircut}
+            </if>
+            <if test="vipHaircare != null">
+                and vip_haircare = #{vipHaircare}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_vip
+        <where>
+            <if test="vipId != null">
+                and vip_id = #{vipId}
+            </if>
+            <if test="vipName != null and vipName != ''">
+                and vip_name = #{vipName}
+            </if>
+            <if test="vipGender != null">
+                and vip_gender = #{vipGender}
+            </if>
+            <if test="vipPhone != null">
+                and vip_phone = #{vipPhone}
+            </if>
+            <if test="vipBirthday != null">
+                and vip_birthday = #{vipBirthday}
+            </if>
+            <if test="vipBalance != null">
+                and vip_balance = #{vipBalance}
+            </if>
+            <if test="vipHaircut != null">
+                and vip_haircut = #{vipHaircut}
+            </if>
+            <if test="vipHaircare != null">
+                and vip_haircare = #{vipHaircare}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="vipId" useGeneratedKeys="true">
+        insert into hs_vip(vip_name, vip_gender, vip_phone, vip_birthday, vip_balance, vip_haircut, vip_haircare)
+        values (#{vipName}, #{vipGender}, #{vipPhone}, #{vipBirthday}, #{vipBalance}, #{vipHaircut}, #{vipHaircare})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="vipId" useGeneratedKeys="true">
+        insert into hs_vip(vip_name, vip_gender, vip_phone, vip_birthday, vip_balance, vip_haircut, vip_haircare)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.vipName}, #{entity.vipGender}, #{entity.vipPhone}, #{entity.vipBirthday}, #{entity.vipBalance}, #{entity.vipHaircut}, #{entity.vipHaircare})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="vipId" useGeneratedKeys="true">
+        insert into hs_vip(vip_name, vip_gender, vip_phone, vip_birthday, vip_balance, vip_haircut, vip_haircare)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.vipName}, #{entity.vipGender}, #{entity.vipPhone}, #{entity.vipBirthday}, #{entity.vipBalance}, #{entity.vipHaircut}, #{entity.vipHaircare})
+        </foreach>
+        on duplicate key update
+        vip_name = values(vip_name),
+        vip_gender = values(vip_gender),
+        vip_phone = values(vip_phone),
+        vip_birthday = values(vip_birthday),
+        vip_balance = values(vip_balance),
+        vip_haircut = values(vip_haircut),
+        vip_haircare = values(vip_haircare)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_vip
+        <set>
+            <if test="vipName != null and vipName != ''">
+                vip_name = #{vipName},
+            </if>
+            <if test="vipGender != null">
+                vip_gender = #{vipGender},
+            </if>
+            <if test="vipPhone != null">
+                vip_phone = #{vipPhone},
+            </if>
+            <if test="vipBirthday != null">
+                vip_birthday = #{vipBirthday},
+            </if>
+            <if test="vipBalance != null">
+                vip_balance = #{vipBalance},
+            </if>
+            <if test="vipHaircut != null">
+                vip_haircut = #{vipHaircut},
+            </if>
+            <if test="vipHaircare != null">
+                vip_haircare = #{vipHaircare},
+            </if>
+        </set>
+        where vip_id = #{vipId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_vip where vip_id = #{vipId}
+    </delete>
+
+</mapper>
+

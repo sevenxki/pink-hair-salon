@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsSaleCommissionMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsSaleCommission" id="HsSaleCommissionMap">
+        <result property="saleCommissionId" column="sale_commission_id" jdbcType="INTEGER"/>
+        <result property="staffId" column="staff_id" jdbcType="INTEGER"/>
+        <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+        <result property="commission" column="commission" jdbcType="INTEGER"/>
+        <association property="hsStaff" javaType="edu.scau.misp.hs.entity.HsStaff">
+            <result property="staffId" column="staff_id" jdbcType="INTEGER"/>
+            <result property="staffNumber" column="staff_number" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+            <result property="level" column="level" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="phoneNumber" column="phone_number" jdbcType="INTEGER"/>
+            <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+            <result property="creationDay" column="creation_day" jdbcType="TIMESTAMP"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        </association>
+        <association property="hsPaymentOrder" javaType="edu.scau.misp.hs.entity.HsPaymentOrder">
+            <result property="paymentOrderId" column="payment_order_id" jdbcType="INTEGER"/>
+            <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+            <result property="time" column="time" jdbcType="TIMESTAMP"/>
+            <result property="useDiscount" column="use_discount" jdbcType="INTEGER"/>
+            <result property="useVip" column="use_vip" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="phonePayment" column="phone_payment" jdbcType="VARCHAR"/>
+            <result property="paymentMethod" column="payment_method" jdbcType="INTEGER"/>
+            <result property="totalPayment" column="total_payment" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsSaleCommissionMap">
+        select
+          c.sale_commission_id, c.staff_id, c.payment_order_id, c.commission,
+          b.staff_id, b.staff_number, b.username, b.staff_name, b.level, b.gender, b.phone_number, b.birthday, b.creation_day, b.role_id,
+          a.payment_order_id, a.order_id, a.time,a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment
+        from hs_sale_commission as c left join hs_staff as b on c.staff_id = b.staff_id
+                                       left join hs_payment_order as a on c.payment_order_id = a.payment_order_id
+        where c.sale_commission_id = #{saleCommissionId}
+    </select>
+
+    <!--查询单个-->
+    <select id="queryByStaff" resultMap="HsSaleCommissionMap">
+        select
+            c.sale_commission_id, c.staff_id, c.payment_order_id, c.commission,
+            b.staff_id, b.staff_number, b.username, b.staff_name, b.level, b.gender, b.phone_number, b.birthday, b.creation_day, b.role_id,
+            a.payment_order_id, a.order_id, a.time,a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment
+        from hs_sale_commission as c left join hs_staff as b on c.staff_id = b.staff_id
+                                     left join hs_payment_order as a on c.payment_order_id = a.payment_order_id
+        where c.staff_id = #{staffId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsSaleCommissionMap">
+        select
+        c.sale_commission_id, c.staff_id, c.payment_order_id, c.commission,
+        b.staff_id, b.staff_number, b.username, b.staff_name, b.level, b.gender, b.phone_number, b.birthday, b.creation_day, b.role_id,
+        a.payment_order_id, a.order_id, a.time,a.phone_payment, a.payment_method, a.use_discount, a.use_vip, a.status, a.total_payment
+        from hs_sale_commission as c left join hs_staff as b on c.staff_id = b.staff_id
+        left join hs_payment_order as a on c.payment_order_id = a.payment_order_id
+        <where>
+            <if test="saleCommissionId != null">
+                and c.sale_commission_id = #{saleCommissionId}
+            </if>
+            <if test="staffId != null">
+                and c.staff_id = #{staffId}
+            </if>
+            <if test="paymentOrderId != null">
+                and c.payment_order_id = #{paymentOrderId}
+            </if>
+            <if test="commission != null">
+                and c.commission = #{commission}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_sale_commission
+        <where>
+            <if test="saleCommissionId != null">
+                and sale_commission_id = #{saleCommissionId}
+            </if>
+            <if test="staffId != null">
+                and staff_id = #{staffId}
+            </if>
+            <if test="paymentOrderId != null">
+                and payment_order_id = #{paymentOrderId}
+            </if>
+            <if test="commission != null">
+                and commission = #{commission}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="saleCommissionId" useGeneratedKeys="true">
+        insert into hs_sale_commission(staff_id, payment_order_id, commission)
+        values (#{staffId}, #{paymentOrderId}, #{commission})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_sale_commission
+        <set>
+            <if test="staffId != null">
+                staff_id = #{staffId},
+            </if>
+            <if test="paymentOrderId != null">
+                payment_order_id = #{paymentOrderId},
+            </if>
+            <if test="commission != null">
+                commission = #{commission},
+            </if>
+        </set>
+        where sale_commission_id = #{saleCommissionId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_sale_commission where sale_commission_id = #{saleCommissionId}
+    </delete>
+
+</mapper>
+

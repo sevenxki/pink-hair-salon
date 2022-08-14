@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsCustomerMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsCustomer" id="HsCustomerMap">
+        <result property="customerId" column="customer_id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="customerName" column="customer_name" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="INTEGER"/>
+        <result property="gender" column="gender" jdbcType="INTEGER"/>
+        <result property="phoneNumber" column="phone_number" jdbcType="INTEGER"/>
+        <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+        <result property="creationDay" column="creation_day" jdbcType="TIMESTAMP"/>
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+
+<!--        <association property="hsUser" javaType="edu.scau.misp.hs.mapper.HsUserMapper"-->
+<!--                     column="username"-->
+<!--                     select="edu.scau.misp.hs.mapper.HsUserMapper.queryByUsername">-->
+<!--        </association>-->
+        <association property="hsRole" javaType="edu.scau.misp.hs.mapper.HsRoleMapper"
+                     column="role_id"
+                     select="edu.scau.misp.hs.mapper.HsRoleMapper.queryById">
+        </association>
+    </resultMap>
+
+
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsCustomerMap">
+        select
+          customer_id, username, customer_name, level, gender, phone_number, birthday, creation_day, role_id
+        from hs_customer
+        where customer_id = #{customerId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsCustomerMap">
+        select
+        hc.customer_id, hc.username, hc.customer_name, hc.level, hc.gender, hc.phone_number, hc.birthday, hc.creation_day, hr.role_id,
+        hr.role_name
+        from hs_customer as hc
+            left join hs_role as hr on hc.role_id=hr.role_id
+
+        <where>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and customer_name = #{customerName}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="phoneNumber != null">
+                and phone_number = #{phoneNumber}
+            </if>
+            <if test="birthday != null">
+                and birthday = #{birthday}
+            </if>
+            <if test="creationDay != null">
+                and creation_day = #{creationDay}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+        </where>
+
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_customer
+        <where>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and customer_name = #{customerName}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="phoneNumber != null">
+                and phone_number = #{phoneNumber}
+            </if>
+            <if test="birthday != null">
+                and birthday = #{birthday}
+            </if>
+            <if test="creationDay != null">
+                and creation_day = #{creationDay}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="customerId" useGeneratedKeys="true">
+        insert into hs_customer(username, customer_name, level, gender, phone_number, birthday, creation_day, role_id)
+        values (#{username}, #{customerName}, #{level}, #{gender}, #{phoneNumber}, #{birthday}, #{creationDay}, #{roleId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="customerId" useGeneratedKeys="true">
+        insert into hs_customer(username, customer_name, level, gender, phone_number, birthday, creation_day, role_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.username}, #{entity.customerName}, #{entity.level}, #{entity.gender}, #{entity.phoneNumber}, #{entity.birthday}, #{entity.creationDay}, #{entity.roleId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="customerId" useGeneratedKeys="true">
+        insert into hs_customer(username, customer_name, level, gender, phone_number, birthday, creation_day, role_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.username}, #{entity.customerName}, #{entity.level}, #{entity.gender}, #{entity.phoneNumber}, #{entity.birthday}, #{entity.creationDay}, #{entity.roleId})
+        </foreach>
+        on duplicate key update
+        username = values(username),
+        customer_name = values(customer_name),
+        level = values(level),
+        gender = values(gender),
+        phone_number = values(phone_number),
+        birthday = values(birthday),
+        creation_day = values(creation_day),
+        role_id = values(role_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_customer
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="customerName != null and customerName != ''">
+                customer_name = #{customerName},
+            </if>
+            <if test="level != null">
+                level = #{level},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="phoneNumber != null">
+                phone_number = #{phoneNumber},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="creationDay != null">
+                creation_day = #{creationDay},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId},
+            </if>
+        </set>
+        where customer_id = #{customerId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_customer where customer_id = #{customerId}
+    </delete>
+
+</mapper>
+

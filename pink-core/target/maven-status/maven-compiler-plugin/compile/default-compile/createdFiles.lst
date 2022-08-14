@@ -1,0 +1,3 @@
+edu\scau\misp\core\config\FastJsonHttpMessageConvertersConfig.class
+edu\scau\misp\core\config\DruidConfig.class
+edu\scau\misp\core\config\ResourcesConfig.class

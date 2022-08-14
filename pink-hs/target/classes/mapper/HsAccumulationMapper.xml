@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsAccumulationMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsAccumulation" id="HsAccumulationMap">
+        <result property="accumulationId" column="accumulation_id" jdbcType="INTEGER"/>
+        <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+        <result property="accumulationTotal" column="accumulation_total" jdbcType="INTEGER"/>
+        <association property="hsVip" javaType="edu.scau.misp.hs.entity.HsVip">
+            <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+            <result property="vipName" column="vip_name" jdbcType="VARCHAR"/>
+            <result property="vipGender" column="vip_gender" jdbcType="INTEGER"/>
+            <result property="vipPhone" column="vip_phone" jdbcType="VARCHAR"/>
+            <result property="vipBirthday" column="vip_birthday" jdbcType="TIMESTAMP"/>
+            <result property="vipBalance" column="vip_balance" jdbcType="INTEGER"/>
+            <result property="vipHaircut" column="vip_haircut" jdbcType="INTEGER"/>
+            <result property="vipHaircare" column="vip_haircare" jdbcType="INTEGER"/>
+            <result property="accumulationId" column="accumulation_id" jdbcType="INTEGER"/>
+            <result property="accumulationTotal" column="accumulation_total" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryByVipId" resultMap="HsAccumulationMap">
+        select
+            accumulation_id, vip_id, accumulation_total
+        from hs_accumulation
+        where vip_id = #{vipId}
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsAccumulationMap">
+        select
+          accumulation_id, vip_id, accumulation_total
+        from hs_accumulation
+        where accumulation_id = #{accumulationId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="HsAccumulationMap">
+        select
+          accumulation_id, ha.vip_id, accumulation_total, hv.vip_id, hv.vip_name, hv.vip_gender, hv.vip_phone, hv.vip_birthday, hv.vip_balance, hv.vip_haircut, hv.vip_haircare
+        from hs_accumulation as ha left join hs_vip hv on ha.vip_id = hv.vip_id
+        <where>
+            <if test="accumulationId != null">
+                and accumulation_id = #{accumulationId}
+            </if>
+            <if test="vipId != null">
+                and vip_id = #{vipId}
+            </if>
+            <if test="accumulationTotal != null">
+                and accumulation_total = #{accumulationTotal}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from hs_accumulation
+        <where>
+            <if test="accumulationId != null">
+                and accumulation_id = #{accumulationId}
+            </if>
+            <if test="vipId != null">
+                and vip_id = #{vipId}
+            </if>
+            <if test="accumulationTotal != null">
+                and accumulation_total = #{accumulationTotal}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="accumulationId" useGeneratedKeys="true">
+        insert into hs_accumulation(vip_id, accumulation_total)
+        values (#{vipId}, #{accumulationTotal})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="accumulationId" useGeneratedKeys="true">
+        insert into hs_accumulation(vip_id, accumulation_total)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.vipId}, #{entity.accumulationTotal})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="accumulationId" useGeneratedKeys="true">
+        insert into hs_accumulation(vip_id, accumulation_total)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.vipId}, #{entity.accumulationTotal})
+        </foreach>
+        on duplicate key update
+        vip_id = values(vip_id),
+        accumulation_total = values(accumulation_total)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hs_accumulation
+        <set>
+            <if test="vipId != null">
+                vip_id = #{vipId},
+            </if>
+            <if test="accumulationTotal != null">
+                accumulation_total = #{accumulationTotal},
+            </if>
+        </set>
+        where accumulation_id = #{accumulationId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hs_accumulation where accumulation_id = #{accumulationId}
+    </delete>
+
+</mapper>
+

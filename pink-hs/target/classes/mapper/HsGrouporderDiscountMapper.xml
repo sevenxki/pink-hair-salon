@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.misp.hs.mapper.HsGrouporderDiscountMapper">
+
+    <resultMap type="edu.scau.misp.hs.entity.HsGrouporderDiscount" id="HsGrouporderDiscountMap">
+        <!--@Table hs_grouporder_discount-->
+        <result property="grouporderDiscountId" column="grouporder_discount_id" jdbcType="INTEGER"/>
+        <result property="grouporderId" column="grouporder_id" jdbcType="INTEGER"/>
+        <result property="discountId" column="discount_id" jdbcType="INTEGER"/>
+        <result property="quantity" column="quantity" jdbcType="INTEGER"/>
+        <result property="amount" column="amount" jdbcType="NUMERIC"/>
+    </resultMap>
+
+    <!--找到会员卡余额充值的所有list-->
+    <select id="queryVipList" resultMap="HsGrouporderDiscountMap">
+        select
+            grouporder_discount_id, grouporder_id, discount_id, quantity, amount
+        from hairsalon.hs_grouporder_discount
+        where discount_id = 1
+    </select>
+
+    <!--找到买理发卡的所有list-->
+    <select id="queryHairCutList" resultMap="HsGrouporderDiscountMap">
+        select
+            grouporder_discount_id, grouporder_id, discount_id, quantity, amount
+        from hairsalon.hs_grouporder_discount
+        where discount_id = 2
+    </select>
+
+    <!--找到买护理卡的所有list-->
+    <select id="queryHairCareList" resultMap="HsGrouporderDiscountMap">
+        select
+            grouporder_discount_id, grouporder_id, discount_id, quantity, amount
+        from hairsalon.hs_grouporder_discount
+        where discount_id = 3
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="HsGrouporderDiscountMap">
+        select
+            grouporder_discount_id, grouporder_id, discount_id, quantity, amount
+        from hairsalon.hs_grouporder_discount
+        where grouporder_discount_id = #{grouporderDiscountId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="HsGrouporderDiscountMap">
+        select
+            grouporder_discount_id, grouporder_id, discount_id, quantity, amount
+        from hairsalon.hs_grouporder_discount
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="HsGrouporderDiscountMap">
+        select
+        grouporder_discount_id, grouporder_id, discount_id, quantity, amount
+        from hairsalon.hs_grouporder_discount
+        <where>
+            <if test="grouporderDiscountId != null">
+                and grouporder_discount_id = #{grouporderDiscountId}
+            </if>
+            <if test="grouporderId != null">
+                and grouporder_id = #{grouporderId}
+            </if>
+            <if test="discountId != null">
+                and discount_id = #{discountId}
+            </if>
+            <if test="quantity != null">
+                and quantity = #{quantity}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="grouporderDiscountId" useGeneratedKeys="true">
+        insert into hairsalon.hs_grouporder_discount(grouporder_id, discount_id, quantity, amount)
+        values (#{grouporderId}, #{discountId}, #{quantity}, #{amount})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update hairsalon.hs_grouporder_discount
+        <set>
+            <if test="grouporderId != null">
+                grouporder_id = #{grouporderId},
+            </if>
+            <if test="discountId != null">
+                discount_id = #{discountId},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+        </set>
+        where grouporder_discount_id = #{grouporderDiscountId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from hairsalon.hs_grouporder_discount where grouporder_discount_id = #{grouporderDiscountId}
+    </delete>
+
+</mapper>

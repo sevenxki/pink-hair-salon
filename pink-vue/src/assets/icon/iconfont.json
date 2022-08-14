@@ -1,0 +1,44 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2052547",
+      "name": "现金支付",
+      "font_class": "xianjinzhifu",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "9306311",
+      "name": "微信支付",
+      "font_class": "weixinzhifu",
+      "unicode": "e689",
+      "unicode_decimal": 59017
+    },
+    {
+      "icon_id": "9885669",
+      "name": "会员 卡支付",
+      "font_class": "ziyuan",
+      "unicode": "e6ca",
+      "unicode_decimal": 59082
+    },
+    {
+      "icon_id": "14505471",
+      "name": "银行卡支付",
+      "font_class": "yinhangkazhifu",
+      "unicode": "ea01",
+      "unicode_decimal": 59905
+    },
+    {
+      "icon_id": "24887788",
+      "name": "支付宝支付",
+      "font_class": "zhifubaozhifu",
+      "unicode": "e501",
+      "unicode_decimal": 58625
+    }
+  ]
+}
